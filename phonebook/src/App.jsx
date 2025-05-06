@@ -1,8 +1,8 @@
-
 import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 import { getAll, createNew, removePerson, updatePerson } from './services/persons.js'
 
 
@@ -12,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notificationMessage, setnotificationMessage] = useState(null)
 
 
   useEffect(() => {
@@ -21,6 +22,7 @@ const App = () => {
       })
   }, [])
 
+  
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
   }
@@ -47,14 +49,24 @@ const App = () => {
   
       if (confirmUpdate) {
         const updatedPerson = { ...existingPerson, number: newNumber }
-  
-        updatePerson(existingPerson.id, updatedPerson)
-          .then(returnedPerson => {
+        
+          updatePerson(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {  
+            setnotificationMessage({ text: `Updated ${returnedPerson.name}`, type: 'notification' })
+            setTimeout(() => {
+              setnotificationMessage(null)
+            }, 5000)          
             setPersons(persons.map(person => 
               person.id !== existingPerson.id ? person : returnedPerson
             ))
+            
             setNewName('')
             setNewNumber('')
+          })
+          .catch(() => {
+            setnotificationMessage({ text: `Information of ${existingPerson.name} has already been removed from server`, type: 'error' })
+            setTimeout(() => setnotificationMessage(null), 5000)
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
           })
       }
     } else {
@@ -65,6 +77,10 @@ const App = () => {
   
       createNew(newPerson)
         .then(person => {
+          setnotificationMessage({ text: `Added ${person.name}`, type: 'notification' })
+            setTimeout(() => {
+              setnotificationMessage(null)
+            }, 5000)
           setPersons(persons.concat(person))
           setNewName('')
           setNewNumber('')
@@ -72,7 +88,6 @@ const App = () => {
     }
   }
   
-
   const handleDelete = (id, name) => {
     const confirmDelete = window.confirm(`Delete ${name}?`)
     
@@ -84,10 +99,11 @@ const App = () => {
     }
   }
 
-
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={notificationMessage} />
 
       <Filter value={filter} onChange={handleFilterChange} />
 
