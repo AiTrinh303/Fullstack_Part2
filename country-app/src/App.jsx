@@ -4,7 +4,7 @@ import CountryDetail from './components/CountryDetail'
 
 function App() {
   const [query, setQuery] = useState('')
-  const [countries, setCountries] = useState([])
+  // const [countries, setCountries] = useState([])
   const [filteredCountries, setFilteredCountries] = useState([])
 
   useEffect(() => {
@@ -29,6 +29,10 @@ function App() {
     setQuery(event.target.value)
   }
 
+  const handleShow = (country) => {
+    setFilteredCountries([country])
+  }
+
   return (
     <>
       <span>Find Countries</span>
@@ -39,7 +43,8 @@ function App() {
           <ul>
             {filteredCountries.map(country => (
               <li key={country.name.common}>
-                {country.name.common}
+               {country.name.common}{' '}
+               <button onClick={() => handleShow(country)}>Show</button>
               </li>
             ))}
           </ul>
