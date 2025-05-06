@@ -35,7 +35,7 @@ function App() {
 
   return (
     <>
-      <span>Find Countries</span>
+      <span>Find countries {' '}</span>
       <input type="text" value={query} onChange={handleChange}/>
       <div>
         {filteredCountries.length > 10 && <p>Too many matches, specify another filter</p>}
@@ -52,7 +52,7 @@ function App() {
         {filteredCountries.length === 1 && (
           <CountryDetail country={filteredCountries[0]} />
         )}
-        {filteredCountries.length === 0 && <p>No matches found</p>}
+
       </div>
     </>
   )
